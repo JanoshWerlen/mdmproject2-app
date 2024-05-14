@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const socket = new WebSocket('ws://localhost:8081');
-    const serverBaseUrl = "http://localhost:3000"
+    const socket = new WebSocket('ws://mdm-project-2-server.azurewebsites.net:8081');
+    const serverBaseUrl = "http://mdm-project-2-server.azurewebsites.net"
 
     socket.onmessage = function (event) {
         console.log("WebSocket message received:", event.data);
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateImage() {
         const imgElement = document.getElementById('resultImage');
         if (imgElement) {
-            const imageUrl = 'http://localhost:3000/display/display.png';
+            const imageUrl = 'http://mdm-project-2-server.azurewebsites.net/display/display.png';
             const timestamp = new Date().getTime(); // Cache busting
             imgElement.src = `${imageUrl}?${timestamp}`;
             console.log('Image src updated to:', imgElement.src);
@@ -72,7 +72,7 @@ function checkFiles(files, type) {
     }
 }
 function displayResults(data) {
-    const serverBaseUrl = 'http://localhost:3000'; // Replace with the actual server address
+    const serverBaseUrl = 'http://mdm-project-2-server.azurewebsites.net'; // Replace with the actual server address
     const imageUrl = `${serverBaseUrl}${data.imagePath}`;
     const timestamp = new Date().getTime(); // Cache busting
     const imageUrlWithCacheBusting = `${imageUrl}?${timestamp}`;
@@ -105,7 +105,7 @@ function displayResults(data) {
 
 
 function displayResults_Class(data) {
-    const serverBaseUrl = 'http://localhost:3000'; // Replace with the actual server address
+    const serverBaseUrl = 'http://mdm-project-2-server.azurewebsites.net'; // Replace with the actual server address
     const imageUrl = `${serverBaseUrl}${data.imagePath}`;
     const timestamp = new Date().getTime(); // Cache busting
     const imageUrlWithCacheBusting = `${imageUrl}?${timestamp}`;

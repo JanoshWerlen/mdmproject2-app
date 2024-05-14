@@ -115,7 +115,7 @@ public final class ObjectDetection {
         // Create HttpClient and HttpRequest
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:3000/display"))
+                .uri(URI.create("http://mdm-project-2-server.azurewebsites.net/display"))
                 .timeout(Duration.ofMinutes(1))
                 .header("Content-Type", "multipart/form-data; boundary=" + boundary)
                 .POST(HttpRequest.BodyPublishers.ofByteArray(multipartBytes))

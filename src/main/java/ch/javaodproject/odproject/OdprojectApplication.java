@@ -20,7 +20,7 @@ public class OdprojectApplication {
         Thread.sleep(5000); // 5000 milliseconds delay
 
         try {//mdm-project-2-server.azurewebsites.net
-            client = new WebSocketNotifyClient(new URI("ws://localhost:8081"));
+            client = new WebSocketNotifyClient(new URI("ws://http://mdm-project-2-server.azurewebsites.net:8081"));
             client.connect();
             System.out.println("WebSocket connected on " + client);
         } catch (URISyntaxException e) {
@@ -33,7 +33,7 @@ public class OdprojectApplication {
             // Attempt to reconnect
             try {
                 System.out.println("Attempting to reconnect WebSocket...");
-                client = new WebSocketNotifyClient(new URI("ws://localhost:8081"));
+                client = new WebSocketNotifyClient(new URI("ws://http://mdm-project-2-server.azurewebsites.net:8081"));
                 client.connectBlocking(); 
             } catch (URISyntaxException | InterruptedException e) {
                 e.printStackTrace();

@@ -198,7 +198,7 @@ public class ClassificationController_OD {
                     .connectTimeout(Duration.ofSeconds(10))
                     .build();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:3000/notify"))
+                    .uri(URI.create("http://mdm-project-2-server.azurewebsites.net/notify"))
                     .timeout(Duration.ofSeconds(10))
                     .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
