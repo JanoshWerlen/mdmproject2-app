@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Video Classification</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <style>
+        .bordered, .media-display {
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .results-display {
+            width: 100%; /* Adjust width if necessary */
+            height: 350px; /* Increased height for better visibility */
+            overflow-y: auto;
+            font-family: monospace; /* Consistent font style */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .media-display {
+            width: 90%; /* Larger width for main content */
+            height: 500px; /* Increased height */
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: auto; /* Center the media display */
+        }
+
+        .media-display img, .media-display video {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .header-area, .upload-area, .results-area {
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            margin-bottom: 10px;
+        }
+
+        .results-detail {
+    padding: 10px;
+    margin-bottom: 5px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="header-area">
+            <h1>Video Classification</h1>
+            <p>DeepJavaLibrary (DJL) Demonstration by werleja1</p>
+            <a href="index.html" class="btn btn-primary">Go to Image Objectdetection</a>
+            <a href="imageClassification.html" class="btn btn-primary">Go to Image Classification</a>
+        </div>
+    
+        <div class="upload-area">
+            <form>
+                <div class="form-group">
+                    <label for="video">Please upload a video (mp4):</label>
+                    <input type="file" accept="video/mp4" class="form-control-file" id="video" name="video" onchange="checkVideo(this.files);">
+                </div>
+            </form>
+        </div>
+    
+        <div class="results-area">
+            <div class="media-display">
+                <img id="dynamicImage" src="" alt="Dynamic Image">
+            </div>
+        </div>
+    
+        <!-- Results display section -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="bordered results-display">
+                    <h2>Video Analysis Results</h2>
+                    <div id="results"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js" defer></script>
+    
+</body>
+</html>

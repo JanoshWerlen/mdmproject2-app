@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Image Classification</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        .bordered, .image-display {
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .results-display {
+            width: 30%; /* Smaller width for JSON box */
+            height: 350px; /* Slightly taller height */
+            overflow-y: auto;
+            font-family: monospace;
+        }
+
+        .image-display {
+            width: 68%; /* Increased width for image display */
+            height: 350px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-display img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .header-area {
+            margin-bottom: 20px;
+        }
+
+        .upload-area {
+            margin-bottom: 20px;
+        }
+
+        .results-area {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-primary {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="header-area">
+            <h1>Image Classification</h1>
+            <p>DeepJavaLibrary (DJL) Demonstration by werleja1</p>
+            <a href="index.html" class="btn btn-primary">Go to Image Objectdetection</a>
+            <a href="analyzeVideo.html" class="btn btn-primary">Go to Video Objectdetection</a>
+        </div>
+
+        <div class="upload-area">
+            <form>
+                <div class="form-group">
+                    <label for="image">Please upload an image (jpeg, png):</label>
+                    <input type="file" accept="image/png, image/jpeg" class="form-control-file" id="image" name="image"
+                        onchange="checkFiles(this.files);">
+                </div>
+            </form>
+        </div>
+
+        <div class="results-area">
+            <div class="bordered results-display">
+                <h2>Results JSON</h2>
+                <div id="JSON_Display"></div>
+            </div>
+            <div class="bordered image-display">
+                <img id="resultImage" src="" alt="Detection Result">
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+
+</html>
