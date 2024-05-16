@@ -66,7 +66,7 @@ public class ClassificationController_OD {
 
     private static final String TEMP_DIR = "src\\main\\resources\\static\\tempVideos";
     private static final String Frames_DIR = "src\\main\\resources\\static\\Frames_Dir";
-    //private static final String outputDir = "src/main/resources/static/predict_img";
+    private static final String outputDir = "src/main/resources/static/predict_img";
 
 
     @GetMapping("/reload-image")
@@ -139,7 +139,7 @@ public class ClassificationController_OD {
             System.out.println("Json " + json);
 
             System.out.println("\n");
-            sendNotifyRequest();
+            //sendNotifyRequest();
 
             // VorlesungsbeispielApplication.notifyWebSocketServer();
         System.out.println("\n" + "Response Entity: " +ResponseEntity.ok(json.toString()) + "\n");
@@ -190,7 +190,108 @@ public class ClassificationController_OD {
         }
     }
 
-    
+
+    private FrameExtractor extractor = new FrameExtractor();
+    @PostMapping("/upload_video")
+    public Map<String, Integer> handleFileUpload(@RequestParam("video") MultipartFile file) throws IOException {
+
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("Empty file provided.");
+        }
+
+        Path tempFile = null;
+        try {
+            System.out.println("Received video file " + file.getSize());
+            Path tempDirPath = Paths.get(TEMP_DIR);
+            Files.createDirectories(tempDirPath);
+            tempFile = Files.createTempFile(tempDirPath, null, ".mp4");
+            file.transferTo(tempFile);
+
+            List<Path> frames = extractor.extractFrames(tempFile.toString(), fps, Frames_DIR);
+            JSONArray resultsForHighProb = new JSONArray();
+            for (Path framePath : frames) {
+                byte[] imageData = Files.readAllBytes(framePath);
+                try {
+
+                    DetectionResult detectionResult = ObjectDetection.predict(imageData, searchObject,
+                            YES_PROBABILITY_THRESHOLD);
+                    if (detectionResult == null || detectionResult.getDetectedObjects() == null
+                            || detectionResult.getImagePath() == null) {
+                       // sendNotifyRequest();
+                        continue; // Skip this frame and continue with next
+                    }
+
+                    JSONArray detections = new JSONArray(detectionResult.getDetectedObjects().toJson());
+                    JSONObject frameResult = new JSONObject();
+                    frameResult.put("detections", detections);
+                    frameResult.put("imagePath", detectionResult.getImagePath());
+                    //sendNotifyRequest();
+                    resultsForHighProb.put(frameResult);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue; // Log the error and continue processing other frames
+                }
+            }
+
+            System.out.println("Amount of detections: " + resultsForHighProb.length());
+
+            Map<String, Integer> classNameCounts = new HashMap<>();
+
+            // Iterate through each detection result
+            for (int i = 0; i < resultsForHighProb.length(); i++) {
+                JSONObject detectionResult = resultsForHighProb.getJSONObject(i);
+                JSONArray detections = detectionResult.getJSONArray("detections");
+
+                // Iterate through each detection item
+                for (int j = 0; j < detections.length(); j++) {
+                    JSONObject detectionItem = detections.getJSONObject(j);
+                    String className = detectionItem.getString("className");
+
+                    // Update the count for the class name
+                    classNameCounts.put(className, classNameCounts.getOrDefault(className, 0) + 1);
+                }
+            }
+
+            for (Map.Entry<String, Integer> entry : classNameCounts.entrySet()) {
+                System.out.println("ClassName: " + entry.getKey() + ", Amount: " + entry.getValue());
+            }
+
+            cleanUpResources(tempFile);
+            // Print the class name counts
+
+            return classNameCounts;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to process video file.", e);
+        }
+    }
+
+    private void cleanUpResources(Path tempFile) throws IOException {
+        if (tempFile != null && Files.exists(tempFile)) {
+            Files.delete(tempFile);
+        }
+        deleteDirectoryRecursively(Paths.get(TEMP_DIR));
+        deleteDirectoryRecursively(Paths.get(Frames_DIR));
+        deleteDirectoryRecursively(Paths.get(outputDir));
+        System.out.println("Clean-up done.");
+    }
+
+    private void deleteDirectoryRecursively(Path directory) throws IOException {
+        if (Files.exists(directory)) {
+            Files.walk(directory)
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+            System.out.println("Deleted directory: " + directory);
+        }
+    }
+
+
+
+
+
+
+    /* 
     private void sendNotifyRequest() {
         try {
             HttpClient client = HttpClient.newBuilder()
@@ -207,7 +308,7 @@ public class ClassificationController_OD {
            // logger.error("Failed to send notification", e);
         }
     }
-
+*/
     public String sanitizeFilePath(String path) {
         return path.replaceAll("[<>:\"/\\\\|?*]", "");
     }

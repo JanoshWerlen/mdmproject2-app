@@ -71,6 +71,63 @@ function checkFiles(files, type) {
 
     }
 }
+
+
+
+
+
+function checkVideo(files) {
+    console.log(files);
+
+    if (files.length !== 1) {
+        alert("Bitte genau eine Datei hochladen.");
+        return;
+    }
+
+    const fileSize = files[0].size / 1024 / 1024; // in MiB
+    if (fileSize > 200) {
+        alert("Datei zu gross (max. 200Mb)");
+        return;
+    }
+
+    //answerPart.style.visibility = "visible";
+    const file = files[0];
+
+    // Preview
+    /*
+    if (file) {
+        preview.src = URL.createObjectURL(file);
+    }
+    */
+
+    // Upload
+    const formData = new FormData();
+    formData.append("video", file);
+
+    fetch('/upload_video', {
+        method: 'POST',
+        body: formData
+    }).then(response => response.json())
+        .then(data => {
+
+            console.log("data:" + data)
+            displayData(data); // Update this function to handle display updates correctly
+
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('JSON_Display').innerHTML = 'Error processing the request.';
+        });
+
+
+}
+
+
+
+
+
+
+
 function displayResults(data) {
     const serverBaseUrl = 'http://mdm-project-2-server.azurewebsites.net'; // Replace with the actual server address
     const imageUrl = `${serverBaseUrl}${data.imagePath}`;
@@ -128,3 +185,32 @@ function displayResults_Class(data) {
         resultsContainer.appendChild(elementDiv);
     });
 }
+
+
+
+
+function displayData(data) {
+    const serverBaseUrl = 'http://mdm-project-2-server.azurewebsites.net'; // Replace with the actual server address
+    const imageUrl = `${serverBaseUrl}${data.imagePath}`;
+    const timestamp = new Date().getTime(); // Cache busting
+    const imageUrlWithCacheBusting = `${imageUrl}?${timestamp}`;
+
+    document.getElementById('dynamicImage').src = imageUrlWithCacheBusting;
+    console.log("Image Path: " + imageUrlWithCacheBusting);
+
+    // Clear any existing results
+    resultsContainer.innerHTML = '';
+
+    // Iterate through the keys of the data object
+    for (const className in data) {
+        // Create HTML elements for each key-value pair
+        const detectionElement = document.createElement('div');
+        detectionElement.classList.add('results-detail'); // Ensure this class is styled appropriately
+        detectionElement.innerHTML = `<p><strong>${className}:</strong> Amount detected: ${data[className]}</p>`;
+
+        resultsContainer.appendChild(detectionElement);
+    }
+}
+
+
+
