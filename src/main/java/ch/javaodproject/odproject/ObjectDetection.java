@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -27,11 +28,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringApplication;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
@@ -77,6 +80,7 @@ public final class ObjectDetection {
         }
         return null;
     }
+ private static WebSocketNotifyClient client;
 
     public synchronized String saveBoundingBoxImage(Image img, DetectedObjects detection, String[] targetClass,
             double probabilityThreshold) throws IOException {
@@ -133,9 +137,57 @@ public final class ObjectDetection {
         if (response.statusCode() == 200) {
             String webPath = "/display/display.png";
             System.out.println("Image successfully sent to Node.js server, saved at: " + webPath);
+            sendNotificationToServer();
             return webPath;
         } else {
             throw new IOException("Failed to send image to Node.js server: " + response.body());
+        }
+    }
+
+    private void sendNotificationToServer() throws IOException {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://mdm-project-2-server.azurewebsites.net/notify"))
+                .timeout(Duration.ofMinutes(1))
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("Interrupted while sending notification", e);
+        }
+
+        if (response.statusCode() == 200) {
+            System.out.println("Notification successfully sent to server.");
+        } else {
+            throw new IOException("Failed to send notification to server: " + response.body());
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        SpringApplication.run(OdprojectApplication.class, args);
+
+        Thread.sleep(5000); // 5000 milliseconds delay
+
+        try {
+            client = new WebSocketNotifyClient(new URI("ws://mdm-project-2-server.azurewebsites.net:80"));
+            client.setConnectionLostTimeout(10); // Increase timeout (in seconds)
+            client.connectBlocking(10, TimeUnit.SECONDS); // Wait for up to 10 seconds
+            System.out.println("WebSocket connected on " + client);
+        } catch (URISyntaxException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void notifyWebSocketServer() {
+        try {
+            System.out.println("Attempting to notify Server...");
+            client.send("/notify");
+        } catch (Exception e) {
+            System.out.println("WebSocket is still not connected." + e);
         }
     }
 }

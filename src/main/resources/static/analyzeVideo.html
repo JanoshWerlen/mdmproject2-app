@@ -45,13 +45,12 @@
         }
 
         .results-detail {
-    padding: 10px;
-    margin-bottom: 5px;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
+            padding: 10px;
+            margin-bottom: 5px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -62,7 +61,7 @@
             <a href="index.html" class="btn btn-primary">Go to Image Objectdetection</a>
             <a href="imageClassification.html" class="btn btn-primary">Go to Image Classification</a>
         </div>
-    
+
         <div class="upload-area">
             <form>
                 <div class="form-group">
@@ -71,24 +70,23 @@
                 </div>
             </form>
         </div>
-    
+
         <div class="results-area">
             <div class="media-display">
-                <img id="dynamicImage" src="" alt="Dynamic Image">
+                <img id="resultImage" src="" alt="Dynamic Image">
             </div>
         </div>
-    
+
         <!-- Results display section -->
         <div class="row">
             <div class="col-md-12">
                 <div class="bordered results-display">
                     <h2>Video Analysis Results</h2>
-                    <div id="results"></div>
+                    <div id="JSON_Display"></div>
                 </div>
             </div>
         </div>
     </div>
     <script src="script.js" defer></script>
-    
 </body>
 </html>

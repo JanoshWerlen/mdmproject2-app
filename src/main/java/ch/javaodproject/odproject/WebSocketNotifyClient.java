@@ -4,7 +4,6 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
-
 public class WebSocketNotifyClient extends WebSocketClient {
 
     public WebSocketNotifyClient(URI serverUri) {
@@ -31,7 +30,7 @@ public class WebSocketNotifyClient extends WebSocketClient {
         ex.printStackTrace();
     }
 
-    public void notifyServer() {
-        this.send("update");
+    public void notifyServer(String message) {
+        this.send(message);
     }
 }

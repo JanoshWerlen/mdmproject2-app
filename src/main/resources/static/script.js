@@ -1,29 +1,51 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const socket = new WebSocket('ws://mdm-project-2-server.azurewebsites.net:8081');
-    const serverBaseUrl = "http://mdm-project-2-server.azurewebsites.net"
-
-    socket.onmessage = function (event) {
-        console.log("WebSocket message received:", event.data);
-        if (event.data === 'received: update') {
-            console.log("Update command received, updating image.");
-            updateImage();
-        }
-    };
+    const serverBaseUrl = "http://mdm-project-2-server.azurewebsites.net";
+    const socket = new WebSocket('ws://mdm-project-2-server.azurewebsites.net');
 
     socket.onopen = function () {
         console.log("WebSocket connection established");
     };
 
-    function updateImage() {
+    socket.onmessage = function (event) {
+        console.log("WebSocket message received:", event.data);
+        if (event.data == 'update') {
+            console.log("Update Image triggered")
+            const fullImagePath = `http://mdm-project-2-server.azurewebsites.net/display/display.png`;
+            updateImage(fullImagePath);
+        }
+    };
+
+    socket.onerror = function (error) {
+        console.log("WebSocket error:", error);
+    };
+
+    socket.onclose = function (event) {
+        console.log("WebSocket connection closed:", event);
+    };
+
+    function updateImage(imagePath) {
         const imgElement = document.getElementById('resultImage');
         if (imgElement) {
-            const imageUrl = 'http://mdm-project-2-server.azurewebsites.net/display/display.png';
             const timestamp = new Date().getTime(); // Cache busting
-            imgElement.src = `${imageUrl}?${timestamp}`;
+            imgElement.src = `${imagePath}?${timestamp}`;
             console.log('Image src updated to:', imgElement.src);
+        } else {
+            console.error('Image element not found');
         }
     }
 });
+
+function updateImage(imagePath) {
+    const imgElement = document.getElementById('resultImage');
+    if (imgElement) {
+        const timestamp = new Date().getTime(); // Cache busting
+        imgElement.src = `${imagePath}?${timestamp}`;
+        console.log('Image src updated to:', imageUrl);
+    } else {
+        console.error('Image element not found');
+    }
+}
+
 
 function checkFiles(files, type) {
     if (files.length !== 1) {
@@ -42,7 +64,6 @@ function checkFiles(files, type) {
     formData.append("image", file);
 
     if (type == "OD") {
-
         fetch('/analyze', {
             method: 'POST',
             body: formData
@@ -68,39 +89,23 @@ function checkFiles(files, type) {
         }).catch(error => {
             document.getElementById('JSON_Display').innerHTML = 'Error processing the request: ' + error.message;
         });
-
     }
 }
 
-
-
-
-
 function checkVideo(files) {
-    console.log(files);
-
+const serverBaseUrl = 'http://mdm-project-2-server.azurewebsites.net';
     if (files.length !== 1) {
         alert("Bitte genau eine Datei hochladen.");
         return;
     }
 
-    const fileSize = files[0].size / 1024 / 1024; // in MiB
+    const fileSize = files[0].size / 1024 / 1024;
     if (fileSize > 200) {
         alert("Datei zu gross (max. 200Mb)");
         return;
     }
 
-    //answerPart.style.visibility = "visible";
     const file = files[0];
-
-    // Preview
-    /*
-    if (file) {
-        preview.src = URL.createObjectURL(file);
-    }
-    */
-
-    // Upload
     const formData = new FormData();
     formData.append("video", file);
 
@@ -109,29 +114,21 @@ function checkVideo(files) {
         body: formData
     }).then(response => response.json())
         .then(data => {
-
-            console.log("data:" + data)
+            console.log("data:", data);
             displayData(data); // Update this function to handle display updates correctly
-
+            //const fullImagePath = `${serverBaseUrl}${data.imagePath}`;
+            //updateImage(fullImagePath); // Call updateImage with the new image path
         })
         .catch(error => {
             console.error('Error:', error);
             document.getElementById('JSON_Display').innerHTML = 'Error processing the request.';
         });
-
-
 }
 
-
-
-
-
-
-
 function displayResults(data) {
-    const serverBaseUrl = 'http://mdm-project-2-server.azurewebsites.net'; // Replace with the actual server address
+    const serverBaseUrl = 'http://mdm-project-2-server.azurewebsites.net';
     const imageUrl = `${serverBaseUrl}${data.imagePath}`;
-    const timestamp = new Date().getTime(); // Cache busting
+    const timestamp = new Date().getTime();
     const imageUrlWithCacheBusting = `${imageUrl}?${timestamp}`;
 
     document.getElementById('resultImage').src = imageUrlWithCacheBusting;
@@ -152,19 +149,15 @@ function displayResults(data) {
                 <p><strong>Class:</strong> ${detection.className}</p>
                 <p><strong>Probability:</strong> ${(detection.probability * 100).toFixed(2)}%</p>
             `;
-
             resultsContainer.appendChild(elementDiv);
         });
     }
 }
 
-
-
-
 function displayResults_Class(data) {
-    const serverBaseUrl = 'http://mdm-project-2-server.azurewebsites.net'; // Replace with the actual server address
+    const serverBaseUrl = 'http://mdm-project-2-server.azurewebsites.net';
     const imageUrl = `${serverBaseUrl}${data.imagePath}`;
-    const timestamp = new Date().getTime(); // Cache busting
+    const timestamp = new Date().getTime();
     const imageUrlWithCacheBusting = `${imageUrl}?${timestamp}`;
 
     document.getElementById('resultImage').src = imageUrlWithCacheBusting;
@@ -172,10 +165,8 @@ function displayResults_Class(data) {
 
     const resultsContainer = document.getElementById('JSON_Display');
 
-    // Clear previous results
     resultsContainer.innerHTML = '';
 
-    // Display detection results
     data.detections.forEach(detection => {
         const elementDiv = document.createElement('div');
         elementDiv.className = 'result-item';
@@ -185,32 +176,27 @@ function displayResults_Class(data) {
         resultsContainer.appendChild(elementDiv);
     });
 }
-
-
-
-
 function displayData(data) {
-    const serverBaseUrl = 'http://mdm-project-2-server.azurewebsites.net'; // Replace with the actual server address
+    const serverBaseUrl = 'http://mdm-project-2-server.azurewebsites.net';
     const imageUrl = `${serverBaseUrl}${data.imagePath}`;
-    const timestamp = new Date().getTime(); // Cache busting
+    const timestamp = new Date().getTime();
     const imageUrlWithCacheBusting = `${imageUrl}?${timestamp}`;
+    const resultsContainer = document.getElementById('JSON_Display');
 
-    document.getElementById('dynamicImage').src = imageUrlWithCacheBusting;
+    if (!resultsContainer) {
+        console.error('Failed to find the results container element');
+        return;
+    }
+
+    document.getElementById('resultImage').src = imageUrlWithCacheBusting;
     console.log("Image Path: " + imageUrlWithCacheBusting);
 
-    // Clear any existing results
     resultsContainer.innerHTML = '';
 
-    // Iterate through the keys of the data object
-    for (const className in data) {
-        // Create HTML elements for each key-value pair
+    for (const className in data.classNameCounts) {
         const detectionElement = document.createElement('div');
-        detectionElement.classList.add('results-detail'); // Ensure this class is styled appropriately
-        detectionElement.innerHTML = `<p><strong>${className}:</strong> Amount detected: ${data[className]}</p>`;
-
+        detectionElement.classList.add('results-detail');
+        detectionElement.innerHTML = `<p><strong>${className}:</strong> Amount detected: ${data.classNameCounts[className]}</p>`;
         resultsContainer.appendChild(detectionElement);
     }
 }
-
-
-
