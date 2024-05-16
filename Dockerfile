@@ -1,6 +1,9 @@
+#az group create --name mdmproject2 --location switzerlandnorth
+#az appservice plan create --name mdmproject2 --resource-group mdmproject2 --sku B1 --is-linux
+
 #docker build -t werleja1/mdmproject2_app:latest . 
 #docker push werleja1/mdmproject2_app:latest   
-#az webapp create --resource-group mdm_project_2 --plan mdm_project_2 --name mdmproject2app --deployment-container-image-name werleja1/mdmproject2_app:latest
+#az webapp create --resource-group mdmproject2 --plan mdmproject2 --name mdm-project-2-app --deployment-container-image-name werleja1/mdmproject2_app:latest
 
 
 
