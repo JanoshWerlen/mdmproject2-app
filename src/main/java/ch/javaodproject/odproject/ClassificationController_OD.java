@@ -188,6 +188,7 @@ public class ClassificationController_OD {
                     // Introduce a small delay to ensure the message is processed by the client
                     Thread.sleep(100); // Adjust the sleep time as needed
                 } catch (Exception e) {
+                    cleanUpResources(tempFile);
                     e.printStackTrace();
                     continue;
                 }
