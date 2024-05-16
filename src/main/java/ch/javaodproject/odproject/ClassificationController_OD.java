@@ -106,6 +106,8 @@ public class ClassificationController_OD {
             System.out.println("imagePath: " + result.getImagePath());
             System.out.println("Json: " + json);
 
+
+             System.out.println("TEST: " + json.toString());   
             return ResponseEntity.ok(json.toString());
 
         } catch (Exception e) {
@@ -131,10 +133,12 @@ public class ClassificationController_OD {
 
             JSONArray jsonArray = new JSONArray();
             for (Classifications.Classification classification : predictionResult.items()) {
-                JSONObject jsonItem = new JSONObject();
-                jsonItem.put("class", classification.getClassName());
-                jsonItem.put("probability", classification.getProbability());
-                jsonArray.put(jsonItem);
+                if (classification != null && classification.getClassName() != null && !classification.getClassName().isEmpty()) {
+                    JSONObject jsonItem = new JSONObject();
+                    jsonItem.put("class", classification.getClassName());
+                    jsonItem.put("probability", classification.getProbability());
+                    jsonArray.put(jsonItem);
+                }
             }
 
             JSONObject json = new JSONObject();

@@ -136,12 +136,11 @@ function displayResults(data) {
 
     const resultsContainer = document.getElementById('JSON_Display');
 
-    resultsContainer.innerHTML = `
-        <p><strong>Class:</strong></p>
-        <p><strong>Probability:</strong></p>
-    `;
+    // Clear previous results
+    resultsContainer.innerHTML = '';
 
-    if (data.detections) {
+    // Check if there are any detections
+    if (data.detections && data.detections.length > 0) {
         data.detections.forEach(detection => {
             const elementDiv = document.createElement('div');
             elementDiv.className = 'result-item';
@@ -151,6 +150,9 @@ function displayResults(data) {
             `;
             resultsContainer.appendChild(elementDiv);
         });
+    } else {
+        // Display a message if no detections are found
+        resultsContainer.innerHTML = '<p>No detections found.</p>';
     }
 }
 
